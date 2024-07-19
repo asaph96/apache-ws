@@ -6,9 +6,27 @@ ARG USERNAME=asaphdiniz
 ARG SHELL=zsh
 ARG TZ="America/Sao_Paulo"
 
-COPY --chmod=777 ./scripts/setup_user.sh /opt/setup_user.sh
-RUN /opt/setup_user.sh ${USERNAME}
-RUN rm /opt/setup_user.sh
+RUN <<"EOT" bash
+    set -eux
+    DISTRO=$(. /etc/os-release && echo "$NAME")
+
+    case ${DISTRO,,} in
+    ubuntu | debian)
+        apt update
+        apt install -y sudo adduser passwd
+        ;;
+    *)
+        echo "Couldn't install user dependencies on distro \"${DISTRO}\", trying anyway"
+        ;;
+    esac
+
+    echo adduser --disabled-password --gecos '' "${USERNAME}"
+    adduser --disabled-password --gecos '' "${USERNAME}"
+    adduser "${USERNAME}" sudo
+    echo '%sudo ALL=(ALL) NOPASSWD:ALL' >>/etc/sudoers
+
+    printf "[user]\ndefault=%s\n" "${USERNAME}" >>/etc/wsl.conf
+EOT
 
 USER ${USERNAME}
 WORKDIR /home/${USERNAME}/
