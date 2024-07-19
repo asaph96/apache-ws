@@ -53,7 +53,7 @@ jobs:
         with:
           driver: kubernetes
           driver-opts: |
-            name=kube
+            builder=kube
       # Login against a Docker registry except on PR
       # https://github.com/docker/login-action
       - name: Log into registry ${{ env.REGISTRY }}
