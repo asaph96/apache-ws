@@ -13,6 +13,7 @@ ubuntu | debian)
     ;;
 esac
 
+echo adduser --disabled-password --gecos '' "${USERNAME}"
 adduser --disabled-password --gecos '' "${USERNAME}"
 adduser "${USERNAME}" sudo
 echo '%sudo ALL=(ALL) NOPASSWD:ALL' >>/etc/sudoers
