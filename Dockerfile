@@ -6,7 +6,7 @@ ARG USERNAME=asaphdiniz
 ARG SHELL=zsh
 ARG TZ="America/Sao_Paulo"
 
-RUN <<EOR bash
+RUN <<EOT bash
 #!/bin/bash
 DISTRO=$(. /etc/os-release && echo "$NAME")
 USERNAME=$1
@@ -26,7 +26,7 @@ adduser "${USERNAME}" sudo
 echo '%sudo ALL=(ALL) NOPASSWD:ALL' >>/etc/sudoers
 
 printf "[user]\ndefault=%s\n" "${USERNAME}" >>/etc/wsl.conf
-EOR
+EOT
 
 USER ${USERNAME}
 WORKDIR /home/${USERNAME}/
