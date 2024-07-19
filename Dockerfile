@@ -6,8 +6,9 @@ ARG USERNAME=asaphdiniz
 ARG SHELL=zsh
 ARG TZ="America/Sao_Paulo"
 
-COPY ./scripts/setup_user.sh /tmp/setup/setup_user.sh
-RUN /tmp/setup/setup_user.sh ${USERNAME}
+COPY ./scripts/setup_user.sh ~/setup/setup_user.sh
+RUN ~/setup/setup_user.sh ${USERNAME}
+RUN rm ~/setup/setup_user.sh
 
 USER ${USERNAME}
 WORKDIR /home/${USERNAME}/
