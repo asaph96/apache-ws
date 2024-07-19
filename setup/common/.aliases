@@ -12,4 +12,4 @@ alias -g ll="eza -lh --icons"
 alias -g la="eza -lha --icons"
 alias -g lt="eza -T --icons"
 
-alias -g cat="batcat"
+alias -g cat="batcat -p"
