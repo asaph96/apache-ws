@@ -6,9 +6,9 @@ ARG USERNAME=asaphdiniz
 ARG SHELL=zsh
 ARG TZ="America/Sao_Paulo"
 
-COPY --chmod=666 ./scripts/setup_user.sh ~/setup_user.sh
-RUN bash -c ~/setup_user.sh ${USERNAME}
-RUN rm setup_user.sh
+COPY --chmod=666 ./scripts/setup_user.sh /opt/setup_user.sh
+RUN bash -c /opt/setup_user.sh ${USERNAME}
+RUN rm /opt/setup_user.sh
 
 USER ${USERNAME}
 WORKDIR /home/${USERNAME}/
