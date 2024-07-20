@@ -6,24 +6,16 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "Tag for the release"
+        description: "Tag for the release e.g. (v1.0.0)"
         required: true
       ref:
         description: "Branch to pull from"
-        required: false
-
-  push:
-    branches-ignore:
-      - "main"
-    tags:
-      - "v*.*.*"
-    paths-ignore:
-        - ./github
+        required: true
 
 env:
   REGISTRY: docker.io
   IMAGE_NAME: ${{ github.repository }}
-  # IMAGE_TAG: ${{ github.ref_name }}-${{ github.sha }}
+
 jobs:
   build-and-push:
     outputs:
@@ -34,11 +26,7 @@ jobs:
       - name: Determine ref
         id: set_ref
         run: |
-          if [[ ${{ github.event.inputs.ref }} ]]; then
-            echo "ref=${{ github.event.inputs.ref }}" >> $GITHUB_OUTPUT
-          else
-            echo "ref=${{ github.ref_name }}" >> $GITHUB_OUTPUT
-          fi
+          echo "ref=${{ github.repository_id }}" >> $GITHUB_OUTPUT
         shell: bash
 
       - name: Checkout code
@@ -59,11 +47,7 @@ jobs:
       - name: Determine IMAGE_TAG
         id: set_image_tag
         run: |
-          if [[ ${{ github.event.inputs.tag }} ]]; then
-            echo "IMAGE_TAG=${{ github.event.inputs.tag }}" >> $GITHUB_OUTPUT
-          else
-            echo "IMAGE_TAG=${{ steps.set_ref.outputs.ref }}-${{ github.sha }}" >> $GITHUB_OUTPUT
-          fi
+          echo "IMAGE_TAG=${{ github.event.inputs.ref }}-${{ github.event.inputs.tag }}" >> $GITHUB_OUTPUT
         shell: bash
 
       - name: Build and push Docker image
@@ -75,7 +59,7 @@ jobs:
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.set_image_tag.outputs.IMAGE_TAG }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          
+
   create-release:
     needs: build-and-push
     runs-on: ubuntu-latest
@@ -102,18 +86,18 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ needs.build-and-push.outputs.ref }}
+          tag_name: ${{ needs.build-and-push.outputs.image_tag }}
           release_name: Release ${{ needs.build-and-push.outputs.image_tag }}
           draft: false
           prerelease: false
           body: "Release of ${{ env.IMAGE_NAME }}:${{ needs.build-and-push.outputs.image_tag }}"
       
-      - name: Upload Docker image to GitHub Release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./image.tar
-          asset_name: docker-image-${{ needs.build-and-push.outputs.image_tag }}.tar
-          asset_content_type: application/octet-stream
+      # - name: Upload Docker image to GitHub Release
+      #   uses: actions/upload-release-asset@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
+      #     asset_path: ./image.tar
+      #     asset_name: docker-image-${{ needs.build-and-push.outputs.image_tag }}.tar
+      #     asset_content_type: application/octet-stream
