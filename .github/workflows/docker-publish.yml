@@ -11,12 +11,12 @@ on:
     - cron: '42 1 * * *'
   push:
     branches: 
-      - "!main"
+      - "ubuntu-zsh"
 
     paths-ignore:
       - ./github
     # Publish semver tags as releases.
-    tags: [ 'v*.*.*' ]
+    # tags: [ 'v*.*.*' ]
   # pull_request:
   #   branches: [ "main" ]
 
