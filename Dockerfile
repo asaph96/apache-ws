@@ -104,6 +104,10 @@ RUN <<"EOT" bash
     
     # Init zsh
     zsh -x /home/"${USERNAME}"/.zshrc
+
+    # Install python versions
+    pyenv install 3.9 3.10 3.11 3.12
+    pyenv global 3.10
 EOT
 
 CMD [ "/bin/zsh" ]

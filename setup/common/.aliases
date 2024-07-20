@@ -1,3 +1,5 @@
+#!/bin/zsh
+
 alias zrld="source ~/.zshrc"
 alias zcfg="$EDITOR ~/.zshrc && zrld"
 alias acfg="$EDITOR ~/.aliases && zrld"
