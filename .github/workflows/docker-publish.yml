@@ -13,6 +13,8 @@ on:
       - "main"
     tags:
       - "v*.*.*"
+    paths-ignore:
+        - ./github
 env:
   REGISTRY: docker.io
   IMAGE_NAME: ${{ github.repository }}
