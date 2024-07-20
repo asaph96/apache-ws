@@ -26,7 +26,7 @@ jobs:
       - name: Determine ref
         id: set_ref
         run: |
-          echo "ref=${{ github.repository_id }}" >> $GITHUB_OUTPUT
+          echo "ref=${{ github.event.inputs.ref }}" >> $GITHUB_OUTPUT
         shell: bash
 
       - name: Checkout code
