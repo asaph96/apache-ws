@@ -1,4 +1,4 @@
-name: Docker CI/CD
+name: 🐳 Docker Publish 🎆
 # This workflow is designed to build a Docker image, upload it to Docker Hub,
 # and create a GitHub release with the image tar file every time there's a commit
 # on branches other than 'main'.
