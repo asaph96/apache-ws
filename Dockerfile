@@ -102,7 +102,6 @@ RUN sudo rm -rf /tmp/setup
 RUN <<"EOT" bash
     set -eux
     
-    echo "================= INIT ZSH ================="
     zsh -x /home/"${USERNAME}"/.zshrc
 EOT
 
