@@ -28,6 +28,7 @@ jobs:
   build-and-push:
     outputs:
       image_tag: ${{ steps.set_image_tag.outputs.IMAGE_TAG }}
+      ref: ${{ steps.set_ref.outputs.ref }}
     runs-on: ubuntu-latest
     steps:
       - name: Determine ref
@@ -79,11 +80,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Install Docker
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y docker.io
+        with:
+          ref: ${{ needs.build-and-push.outputs.ref }}
 
       - name: Load Docker image
         run: |
@@ -102,8 +100,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.sha }}
+          tag_name: ${{ needs.build-and-push.outputs.ref }}
+          release_name: Release ${{ needs.build-and-push.outputs.image_tag }}
           draft: false
           prerelease: false
           body: "Release of ${{ env.IMAGE_NAME }}:${{ needs.build-and-push.outputs.image_tag }}"
