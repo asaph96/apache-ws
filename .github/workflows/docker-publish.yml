@@ -32,13 +32,17 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
+
       - name: Login to DockerHub
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKER_REGISTRY_USERNAME }}
-          password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.DOCKER_REGISTRY_USER }}
+          password: ${{ secrets.DOCKER_REGISTRY_PASSWD }}
+
       - name: Determine ref
         id: set_ref
         run: |
@@ -48,6 +52,7 @@ jobs:
             echo "ref=${{ github.ref_name }}" >> $GITHUB_OUTPUT
           fi
         shell: bash
+
       - name: Determine IMAGE_TAG
         id: set_image_tag
         run: |
@@ -57,6 +62,7 @@ jobs:
             echo "IMAGE_TAG=${{ steps.set_ref.outputs.ref }}-${{ github.sha }}" >> $GITHUB_OUTPUT
           fi
         shell: bash
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
         with:
@@ -71,19 +77,23 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
       - name: Install Docker
         run: |
           sudo apt-get update
           sudo apt-get install -y docker.io
+
       - name: Load Docker image
         run: |
           docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build-and-push.outputs.image_tag }}
           docker save ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build-and-push.outputs.image_tag }} > image.tar
+      
       - name: Upload Docker image as artifact
         uses: actions/upload-artifact@v4
         with:
           name: docker-image
           path: image.tar
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -95,6 +105,7 @@ jobs:
           draft: false
           prerelease: false
           body: "Release of ${{ env.IMAGE_NAME }}:${{ needs.build-and-push.outputs.image_tag }}"
+      
       - name: Upload Docker image to GitHub Release
         uses: actions/upload-release-asset@v1
         env:
