@@ -1,3 +1,5 @@
+<img src=".github/splash.png" alt="apache-ws" />
+
 # apache-ws
 Image for a custom wsl workspace
 
